@@ -7,7 +7,8 @@ export default {
   theme: {
     extend: {
       colors:{
-        "urban-red": "#ea2e02",
+        "urban-blue": "#11407f",
+        "urban-ocean":"#06Bee1"
       },
     },
   },
