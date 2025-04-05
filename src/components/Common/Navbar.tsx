@@ -18,6 +18,8 @@ const Navbar = () => {
   const toogleCartDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
+
+  
   return (
     <>
       <nav className="container mx-auto flex items-center justify-between py-4 px-6">
@@ -31,7 +33,7 @@ const Navbar = () => {
         {/* Center navigatio */}
         <div className="hidden md:flex space-x-6">
           <Link
-            to="#"
+            to="/colletions/all"
             className="text-gray-700 hover:text-black text-xs font-medium uppercase"
           >
             Men
