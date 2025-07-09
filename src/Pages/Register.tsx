@@ -2,8 +2,11 @@ import { useState } from "react"
 import hello from '../assets/hand_18407001.svg'
 import { Link } from "react-router-dom"
 import login from '../assets/1189.jpg'
+import { useAppDispatch } from "../redux/store"
+import { registerUser } from "../redux/slices/authSlices"
 
 const Register = () => {
+    const dispatch = useAppDispatch()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [name, setName] = useState('')
@@ -11,7 +14,7 @@ const Register = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        console.log("User Registered", { email, password, name })
+        dispatch(registerUser({ name, email, password }))
     }
 
   return (

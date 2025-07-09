@@ -2,15 +2,21 @@ import { useState } from "react"
 import hello from '../assets/hand_18407001.svg'
 import { Link } from "react-router-dom"
 import login from '../assets/login.webp'
+import {loginUser} from '../redux/slices/authSlices'
+import { useAppDispatch } from "../redux/store"
+
 
 const Login = () => {
+      const dispatch = useAppDispatch()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+  
 
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        console.log("User Registered", { email, password})
+        dispatch(loginUser({email, password}))
     }
   return (
     <div className="flex">

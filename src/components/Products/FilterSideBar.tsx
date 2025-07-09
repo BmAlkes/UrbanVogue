@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 // Update the interface with an index signature for dynamic access
-interface FilterProps {
+export interface FilterProps {
   category: string;
   gender: string;
   color: string;
