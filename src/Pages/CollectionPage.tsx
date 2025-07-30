@@ -1,28 +1,45 @@
 import { useEffect, useRef, useState } from "react";
 import { FaFilter } from "react-icons/fa";
-import FilterSideBar from "../components/Products/FilterSideBar";
+import FilterSideBar, { FilterProps } from "../components/Products/FilterSideBar";
 import SortOptions from "../components/Products/SortOptions";
 import ProductGrid from "../components/Products/ProductGrid";
+import { useParams, useSearchParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { fetchProductsByFilters } from "../redux/slices/productSlices";
 
-interface ProductImage {
-  url: string;
-}
 
-// Main product interface
-interface ProductProps {
-  _id: number;
-  name: string;
-  price: number;
-  images: ProductImage[];
-}
 
 const CollectionPage = () => {
-  const [products, setProducts] = useState<ProductProps[]>([]);
+  const{collection} = useParams()
+  const [searchParams]= useSearchParams()
+  const dispatch = useAppDispatch()
+  const {products,loading,error}= useAppSelector((state)=>state.products)
+const queryParamsObject: Partial<FilterProps> = {};
+
+searchParams.forEach((value, key) => {
+  // Convert strings em arrays onde necessário (ex: size, material, brand)
+  if (["size", "material", "brand"].includes(key)) {
+    if (queryParamsObject[key as keyof FilterProps]) {
+      (queryParamsObject[key as keyof FilterProps] as string[]).push(value);
+    } else {
+      queryParamsObject[key as keyof FilterProps] = [value] as any;
+    }
+  } else if (["minPrice", "maxPrice", "limit"].includes(key)) {
+    queryParamsObject[key as keyof FilterProps] = Number(value) as any;
+  } else {
+    queryParamsObject[key as keyof FilterProps] = value as any;
+  }
+});
+
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const toggleSideBar = () => {
     setIsSideBarOpen(!isSideBarOpen);
   };
+
+useEffect(()=>{
+  dispatch(fetchProductsByFilters({collection, ...queryParamsObject}))
+},[dispatch,collection,searchParams])
 
   const handleClickOutside = (event: MouseEvent) => {
     if(sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
@@ -37,93 +54,6 @@ const CollectionPage = () => {
     }
   },[])
 
-  useEffect(() => {
-    setTimeout(() => {
-      const fetchProducts = [
-        {
-          _id: 4,
-          name: "Product 1",
-          price: 100,
-          images: [
-            {
-              url: "https://picsum.photos/500/500/?random=11",
-            },
-          ],
-        },
-        {
-          _id: 5,
-          name: "Product 2",
-          price: 100,
-          images: [
-            {
-              url: "https://picsum.photos/500/500/?random=12",
-            },
-          ],
-        },
-        {
-          _id: 6,
-          name: "Product 3",
-          price: 100,
-          images: [
-            {
-              url: "https://picsum.photos/500/500/?random=13",
-            },
-          ],
-        },
-        {
-          _id: 7,
-          name: "Product 4",
-          price: 100,
-          images: [
-            {
-              url: "https://picsum.photos/500/500/?random=14",
-            },
-          ],
-        },
-        {
-          _id: 8,
-          name: "Product 1",
-          price: 100,
-          images: [
-            {
-              url: "https://picsum.photos/500/500/?random=15",
-            },
-          ],
-        },
-        {
-          _id: 9,
-          name: "Product 2",
-          price: 100,
-          images: [
-            {
-              url: "https://picsum.photos/500/500/?random=16",
-            },
-          ],
-        },
-        {
-          _id: 10,
-          name: "Product 3",
-          price: 100,
-          images: [
-            {
-              url: "https://picsum.photos/500/500/?random=17",
-            },
-          ],
-        },
-        {
-          _id: 11,
-          name: "Product 4",
-          price: 100,
-          images: [
-            {
-              url: "https://picsum.photos/500/500/?random=18",
-            },
-          ],
-        },
-      ];
-      setProducts(fetchProducts);
-    }, 1000);
-  }, []);
   return (
     <div className="flex flex-col lg:flex-row">
       {/* mobile filter button */}
@@ -140,7 +70,7 @@ const CollectionPage = () => {
         <SortOptions/>
 
         {/* Products Grid */}
-        <ProductGrid products={products} />
+        <ProductGrid products={products} loading={loading} error={error} />
       </div>
     </div>
   );

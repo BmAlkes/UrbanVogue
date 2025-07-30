@@ -1,47 +1,54 @@
 import { BiTrash } from "react-icons/bi";
-import { RiDeleteBin3Line } from "react-icons/ri";
+import { useAppDispatch } from "../../redux/store";
+import { addToCart, Cart, removeFromCart } from "../../redux/slices/cartSlices";
 
-const CartContents = () => {
-  const cartProducts = [
-    {
-      productId: 1,
-      name: "T-shirt",
-      size: "M",
-      color: "Red",
-      quantity: 1,
-      price: 15,
-      image: "https://picsum.photos/200?random=1",
-    },
+interface CartContentsProps {
+  cart: Cart;
+  guestId: string;
+  userId: string;
+}
 
-    {
-      productId: 2,
-      name: "Jeans",
-      size: "L",
-      color: "Blue",
-      quantity: 25,
-      price: 15,
-      image: "https://picsum.photos/200?random=2",
-    },
-    {
-      productId: 3,
-      name: "T-shirt",
-      size: "M",
-      color: "Red",
-      quantity: 1,
-      price: 29,
-      image: "https://picsum.photos/200?random=3",
-    },
-  ];
+const CartContents = ({ cart, guestId, userId }: CartContentsProps) => {
+  const dispatch = useAppDispatch();
+
+  const handleAddToCart = (
+    productId: string,
+    delta: number,
+    quantity: number,
+    size: string,
+    color: string
+  ) => {
+    if (quantity + delta < 1) return; // Evita enviar update com quantidade menor que 1
+
+    dispatch(
+      addToCart({
+        productId,
+        quantity: delta,
+        size,
+        color,
+        userId,
+        guestId,
+      })
+    );
+  };
+  const handleRemovefromCart = (
+    productId: string,
+    size: string,
+    color: string
+  ) => {
+    dispatch(removeFromCart({ productId, color, guestId, size, userId }));
+  };
+
   return (
     <div>
-      {cartProducts.map((product, index) => (
+      {cart.products.map((product, index) => (
         <div
           className="flex items-start justify-between py-4 border-b"
           key={index}
         >
           <div className="flex items-start">
             <img
-              src={product.image}
+              src={product?.image}
               alt={product.name}
               className="w-20 h-24 object-cover mr-4 rounded"
             />
@@ -51,20 +58,50 @@ const CartContents = () => {
                 size: {product.size} | color: {product.color}
               </p>
               <div className="flex items-center mt-2 ">
-                <button className="border rounded-xl px-2 py-1 text-xl font-medium">
-                  {" "}
+                <button
+                  className="border rounded-xl px-2 py-1 text-xl font-medium disabled:opacity-50"
+                  disabled={product.quantity <= 1}
+                  onClick={() =>
+                    handleAddToCart(
+                      product.productId,
+                      -1,
+                      product.quantity,
+                      product.size,
+                      product.color
+                    )
+                  }
+                >
                   -
                 </button>
                 <span className="mx-4">{product.quantity}</span>
-                <button className="border rounded px-2 py-1 text-xl font-medium">
+                <button
+                  className="border rounded px-2 py-1 text-xl font-medium"
+                  onClick={() =>
+                    handleAddToCart(
+                      product.productId,
+                      1,
+                      product.quantity,
+                      product.size,
+                      product.color
+                    )
+                  }
+                >
                   +
                 </button>
               </div>
             </div>
           </div>
           <div>
-            <p className="font-light">${product.price.toLocaleString()}</p>
-            <button>
+            <p className="font-light">${product?.price?.toLocaleString()}</p>
+            <button
+              onClick={() =>
+                handleRemovefromCart(
+                  product.productId,
+                  product.size,
+                  product.color,
+                )
+              }
+            >
               <BiTrash className="h-3 w-3 mt-2 text-red-600" />
             </button>
           </div>

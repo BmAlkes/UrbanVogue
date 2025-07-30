@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-// Update the interface with an index signature for dynamic access
 export interface FilterProps {
-  category: string;
-  gender: string;
-  color: string;
-  size: string[];
-  material: string[];
-  brand: string[];
-  minPrice: number;
-  maxPrice: number;
-  [key: string]: string | string[] | number; // Add index signature
+  category?: string;
+  gender?: string;
+  color?: string;
+  size?: string[];
+  material?: string[];
+  brand?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  [key: string]: string | string[] | number | undefined;
 }
 
 const FilterSideBar = () => {
-  const [serchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState<FilterProps>({
     category: "",
     gender: "",
@@ -26,8 +25,10 @@ const FilterSideBar = () => {
     minPrice: 0,
     maxPrice: 100,
   });
+
   const navigate = useNavigate();
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+
   const categories = ["Top Wear", "Bottom Wear", "Footwear", "Accessories"];
   const colors = [
     "Red",
@@ -66,8 +67,7 @@ const FilterSideBar = () => {
   const gender = ["Men", "Women"];
 
   useEffect(() => {
-    const params = Object.fromEntries([...serchParams]);
-
+    const params = Object.fromEntries([...searchParams]);
     setFilters({
       category: params.category || "",
       gender: params.gender || "",
@@ -79,78 +79,95 @@ const FilterSideBar = () => {
       maxPrice: params.maxPrice ? parseInt(params.maxPrice) : 100,
     });
     setPriceRange([0, Number(params.maxPrice) || 100]);
-  }, [serchParams]);
+  }, [searchParams]);
 
-  // Handle input changes (checkboxes, radio buttons)
-  const handleFilterChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked, type } = e.target;
     let newFilters = { ...filters };
-    
+
     if (type === "checkbox") {
-      // Type assertion to tell TypeScript this is a string array
       if (checked) {
-        (newFilters[name] as string[]) = [...(newFilters[name] as string[]), value];
+        (newFilters[name] as string[]) = [
+          ...(newFilters[name] as string[]),
+          value,
+        ];
       } else {
         (newFilters[name] as string[]) = (newFilters[name] as string[]).filter(
           (item: string) => item !== value
         );
       }
     } else if (type === "radio") {
-      // For radio buttons
       newFilters[name] = value;
     }
-    
+
     setFilters(newFilters);
     updateSearchParams(newFilters);
   };
 
-
-
-  // New handler specifically for color buttons
   const handleColorClick = (color: string) => {
     const newFilters = { ...filters, color };
     setFilters(newFilters);
     updateSearchParams(newFilters);
   };
 
-  // Handle price range changes
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
     const newPriceRange: [number, number] = [0, value];
     setPriceRange(newPriceRange);
-    
+
     const newFilters = {
       ...filters,
-      maxPrice: value
+      maxPrice: value,
     };
     setFilters(newFilters);
     updateSearchParams(newFilters);
   };
 
-  // Update URL search params
   const updateSearchParams = (filters: FilterProps) => {
     const params = new URLSearchParams();
-    
-    // Only add non-empty values to the URL
-   Object.keys(filters).forEach((key) => {
-    if(Array.isArray(filters[key])&& filters[key].length > 0) {
-    params.append(key, filters[key].join(","));
-    }else if(filters[key]){
-      params.append(key, filters[key] as string);
-    }
-   });
-    
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (Array.isArray(value) && value.length > 0) {
+        params.append(key, value.join(","));
+      } else if (
+        typeof value === "string" &&
+        value.trim() !== "" &&
+        value !== "all"
+      ) {
+        params.append(key, value);
+      } else if (
+        typeof value === "number" &&
+        (key === "minPrice" || key === "maxPrice")
+      ) {
+        params.append(key, String(value));
+      }
+    });
+
     setSearchParams(params);
-    navigate(`?${params.toString()}`)
+    navigate(`?${params.toString()}`);
+  };
+  const handleClearFilters = () => {
+    const clearedFilters: FilterProps = {
+      category: "",
+      gender: "",
+      color: "",
+      size: [],
+      material: [],
+      brand: [],
+      minPrice: 0,
+      maxPrice: 100,
+    };
+    setFilters(clearedFilters);
+    setPriceRange([0, 100]);
+    setSearchParams({});
+    navigate("?"); // remove os parâmetros da URL
   };
 
   return (
     <div className="p-4">
       <h3 className="block text-gray-800 font-medium mb-2">Filter</h3>
-      
-      {/* Category filter */}
+
+      {/* Category */}
       <div className="mb-6">
         <label className="block text-gray-600 font-medium mb-2">Category</label>
         {categories.map((cat) => (
@@ -159,7 +176,7 @@ const FilterSideBar = () => {
               type="radio"
               name="category"
               value={cat}
-              className="mr-2 h-4 w-4 text-blue-500 focus:ring-blue-400 border-gray-300"
+              className="mr-2 h-4 w-4"
               onChange={handleFilterChange}
               checked={filters.category === cat}
             />
@@ -168,7 +185,7 @@ const FilterSideBar = () => {
         ))}
       </div>
 
-      {/* Gender filter */}
+      {/* Gender */}
       <div className="mb-6">
         <label className="block text-gray-600 font-medium mb-2">Gender</label>
         {gender.map((gen) => (
@@ -176,7 +193,7 @@ const FilterSideBar = () => {
             <input
               type="radio"
               name="gender"
-              className="mr-2 h-4 w-4 text-blue-500 focus:ring-blue-400 border-gray-300"
+              className="mr-2 h-4 w-4"
               value={gen}
               onChange={handleFilterChange}
               checked={filters.gender === gen}
@@ -185,8 +202,8 @@ const FilterSideBar = () => {
           </div>
         ))}
       </div>
-      
-      {/* Color filter */}
+
+      {/* Colors */}
       <div className="mb-6">
         <label className="block text-gray-600 font-medium mb-2">Colors</label>
         <div className="flex flex-wrap gap-2">
@@ -194,8 +211,10 @@ const FilterSideBar = () => {
             <button
               key={color}
               onClick={() => handleColorClick(color)}
-              className={`w-8 h-8 border cursor-pointer rounded-full transition hover:scale-105 ${
-                filters.color === color ? 'ring-2 ring-blue-500 ring-offset-2' : 'border-gray-300'
+              className={`w-8 h-8 border rounded-full transition hover:scale-105 ${
+                filters.color === color
+                  ? "ring-2 ring-blue-500 ring-offset-2"
+                  : "border-gray-300"
               }`}
               style={{ backgroundColor: color.toLowerCase() }}
               aria-label={`Select ${color} color`}
@@ -203,8 +222,8 @@ const FilterSideBar = () => {
           ))}
         </div>
       </div>
-      
-      {/* Size filter */}
+
+      {/* Sizes */}
       <div className="mb-6">
         <label className="block text-gray-600 font-medium mb-2">Sizes</label>
         {sizes.map((size) => (
@@ -212,7 +231,7 @@ const FilterSideBar = () => {
             <input
               type="checkbox"
               name="size"
-              className="mr-2 h-4 w-4 text-blue-500 focus:ring-blue-400 border-gray-300"
+              className="mr-2 h-4 w-4"
               value={size}
               onChange={handleFilterChange}
               checked={(filters.size as string[]).includes(size)}
@@ -221,8 +240,8 @@ const FilterSideBar = () => {
           </div>
         ))}
       </div>
-      
-      {/* Material filter */}
+
+      {/* Material */}
       <div className="mb-6">
         <label className="block text-gray-600 font-medium mb-2">Material</label>
         {materials.map((material) => (
@@ -230,7 +249,7 @@ const FilterSideBar = () => {
             <input
               type="checkbox"
               name="material"
-              className="mr-2 h-4 w-4 text-blue-500 focus:ring-blue-400 border-gray-300"
+              className="mr-2 h-4 w-4"
               value={material}
               onChange={handleFilterChange}
               checked={(filters.material as string[]).includes(material)}
@@ -239,8 +258,8 @@ const FilterSideBar = () => {
           </div>
         ))}
       </div>
-      
-      {/* Brands filter */}
+
+      {/* Brands */}
       <div className="mb-6">
         <label className="block text-gray-600 font-medium mb-2">Brands</label>
         {brands.map((brand) => (
@@ -251,14 +270,14 @@ const FilterSideBar = () => {
               value={brand}
               onChange={handleFilterChange}
               checked={(filters.brand as string[]).includes(brand)}
-              className="mr-2 h-4 w-4 text-blue-500 focus:ring-blue-400 border-gray-300"
+              className="mr-2 h-4 w-4"
             />
             <span className="text-gray-700 text-xs">{brand}</span>
           </div>
         ))}
       </div>
-      
-      {/* Price filter */}
+
+      {/* Price */}
       <div className="mb-6">
         <label className="block text-gray-600 font-medium mb-2">Price</label>
         <input
@@ -272,6 +291,14 @@ const FilterSideBar = () => {
         <div className="flex justify-between text-xs text-gray-600 mt-2">
           <span>${priceRange[0]}</span>
           <span>${priceRange[1]}</span>
+        </div>
+        <div className="mt-4">
+          <button
+            onClick={handleClearFilters}
+            className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded text-sm"
+          >
+            Clear Filter
+          </button>
         </div>
       </div>
     </div>

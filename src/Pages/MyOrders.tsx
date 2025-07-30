@@ -1,163 +1,80 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { fetchUserOrders } from "../redux/slices/orderSlices";
 
-interface OrderItemProps {
+export interface OrderItemProps {
   id: number;
   name: string;
   price: number;
   quantity: number;
   image: string;
 }
-interface ShippingAddress {
+
+export interface ShippingAddress {
   city: string;
   country: string;
-  street: string;
+  address?: string; // ✅ MongoDB usa 'address', não 'street'
 }
-interface Order {
-  id: number;
-  createdAt: Date;
+
+// ✅ Interface para order do MongoDB
+interface MongoOrder {
+  _id: string;
+  createdAt: string;
   shippingAddress: ShippingAddress;
-  orderItems: OrderItemProps[];
-  totalPrice?: number;
-  isPaid?: boolean;
+  orderItemSchema: any[]; // ✅ MongoDB usa 'orderItemSchema', não 'orderItems'
+  totalPrice: number;
+  isPaid: boolean;
+  paymentMethod: string;
+  status: string;
 }
 
 const MyOrders = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const dispatch = useAppDispatch();
+  const { orders, error, loading } = useAppSelector((state) => state.orders);
+  console.log("Orders do Redux:", orders);
 
   useEffect(() => {
-    //Simulate fetching data from an API
+    dispatch(fetchUserOrders());
+  }, [dispatch]);
 
-    setTimeout(() => {
-      const mockOrders = [
-        {
-          id: 1,
-          createdAt: new Date(),
-          shippingAddress: {
-            city: "New York",
-            country: "USA",
-            street: "123 Main St",
-          },
-          orderItems: [
-            {
-              id: 1,
-              name: "Product 1",
-              price: 100,
-              quantity: 2,
-              image: "https://picsum.photos/500/500?ramdom=1",
-            },
-            {
-              id: 2,
-              name: "Product 1",
-              price: 100,
-              quantity: 2,
-              image: "https://picsum.photos/500/500?ramdom=2",
-            },
-          ],
-          totalPrice: 200,
-          isPaid: true,
-          status: "Delivered",
-        },
-        {
-          id: 2,
-          createdAt: new Date(),
-          shippingAddress: {
-            city: "New York",
-            country: "USA",
-            street: "123 Main St",
-          },
-          orderItems: [
-            {
-              id: 1,
-              name: "Product 1",
-              price: 100,
-              quantity: 2,
-              image: "https://picsum.photos/500/500?ramdom=4",
-            },
-            {
-              id: 2,
-              name: "Product 1",
-              price: 100,
-              quantity: 2,
-              image: "https://picsum.photos/500/500?ramdom=5",
-            },
-          ],
-          totalPrice: 200,
-          isPaid: true,
-          status: "Delivered",
-        },
-        {
-          id: 3,
-          createdAt: new Date(),
-          shippingAddress: {
-            city: "New York",
-            country: "USA",
-            street: "123 Main St",
-          },
-          orderItems: [
-            {
-              id: 1,
-              name: "Product 1",
-              price: 100,
-              quantity: 2,
-              image: "https://picsum.photos/500/500?ramdom=3",
-            },
-            {
-              id: 2,
-              name: "Product 1",
-              price: 100,
-              quantity: 2,
-              image: "https://picsum.photos/500/500?ramdom=6",
-            },
-          ],
-          totalPrice: 200,
-          isPaid: false,
-          status: "Delivered",
-        },
-      ];
-
-      setOrders(mockOrders);
-    }, 2000);
-  }, []);
   const navigate = useNavigate();
-  const handleOrderClick = (orderId:number) => {
+  
+  // ✅ Usar _id em vez de id
+  const handleOrderClick = (orderId: string) => {
     navigate(`/order/${orderId}`);
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
       <h2 className="text-xl sm:text-2xl font-bold mb-6">My Orders</h2>
 
-      {/* Versão para desktop (oculta em mobile) */}
+      {/* Versão para desktop */}
       <div className="hidden md:block relative shadow-md rounded-lg overflow-hidden">
         <table className="min-w-full text-left text-gray-500">
           <thead className="bg-gray-100 text-xs uppercase text-gray-700">
             <tr>
-              <th className="py-3 px-4">Image</th>
               <th className="py-3 px-4">Order ID</th>
               <th className="py-3 px-4">Created</th>
               <th className="py-3 px-4">Shipping Address</th>
-              <th className="py-3 px-4">Items</th>
+              <th className="py-3 px-4">Payment Method</th>
               <th className="py-3 px-4">Price</th>
               <th className="py-3 px-4">Status</th>
             </tr>
           </thead>
           <tbody>
-            {orders.length > 0 ? (
-              orders.map((order) => (
+            {orders && orders.length > 0 ? (
+              orders.map((order: any) => (
                 <tr
-                  key={order.id}
+                  key={order._id}
                   className="border-b hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleOrderClick(order.id)}
+                  onClick={() => handleOrderClick(order._id)}
                 >
-                  <td className="py-4 px-4">
-                    <img
-                      src={order.orderItems[0].image}
-                      alt={order.orderItems[0].name}
-                      className="w-12 h-12 object-cover rounded-lg"
-                    />
-                  </td>
                   <td className="py-4 px-4 font-medium text-gray-900 whitespace-nowrap">
-                    #{order.id}
+                    #{order._id.slice(-8)} {/* ✅ Mostra últimos 8 caracteres */}
                   </td>
                   <td className="py-4 px-4 font-medium text-gray-900 whitespace-nowrap">
                     {new Date(order.createdAt).toLocaleDateString()}{" "}
@@ -168,7 +85,9 @@ const MyOrders = () => {
                       ? `${order.shippingAddress.city}, ${order.shippingAddress.country}`
                       : "N/A"}
                   </td>
-                  <td className="py-4 px-4">{order.orderItems.length}</td>
+                  <td className="py-4 px-4 capitalize">
+                    {order.paymentMethod || "N/A"}
+                  </td>
                   <td className="py-4 px-4">${order.totalPrice}</td>
                   <td className="py-4 px-4">
                     <span
@@ -185,7 +104,7 @@ const MyOrders = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="py-4 px-4 text-center text-gray-500">
+                <td colSpan={6} className="py-4 px-4 text-center text-gray-500">
                   You have no orders yet.
                 </td>
               </tr>
@@ -196,26 +115,23 @@ const MyOrders = () => {
 
       {/* Versão para mobile (cards) */}
       <div className="md:hidden space-y-4">
-        {orders.length > 0 ? (
-          orders.map((order) => (
+        {orders && orders.length > 0 ? (
+          orders.map((order: any) => (
             <div
-              key={order.id}
+              key={order._id}
               className="bg-white rounded-lg shadow-md p-4 border border-gray-200 cursor-pointer"
-              onClick={() => handleOrderClick(order.id)}
+              onClick={() => handleOrderClick(order._id)}
             >
-              <div className="flex items-center mb-3">
-                <img
-                  src={order.orderItems[0].image}
-                  alt={order.orderItems[0].name}
-                  className="w-16 h-16 object-cover rounded-lg mr-3"
-                />
+              <div className="flex items-center mb-3 justify-between">
                 <div>
-                  <p className="font-bold text-gray-900">#{order.id}</p>
+                  <p className="font-bold text-gray-900">
+                    #{order._id.slice(-8)}
+                  </p>
                   <p className="text-sm text-gray-500">
                     {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <div className="ml-auto">
+                <div>
                   <span
                     className={`${
                       order.isPaid
@@ -238,10 +154,16 @@ const MyOrders = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Items:</p>
-                  <p className="font-medium">{order.orderItems.length}</p>
+                  <p className="text-gray-500">Payment:</p>
+                  <p className="font-medium capitalize">
+                    {order.paymentMethod || "N/A"}
+                  </p>
                 </div>
-                <div className="col-span-2">
+                <div>
+                  <p className="text-gray-500">Status:</p>
+                  <p className="font-medium">{order.status || "Processing"}</p>
+                </div>
+                <div>
                   <p className="text-gray-500">Total:</p>
                   <p className="font-medium text-lg">${order.totalPrice}</p>
                 </div>

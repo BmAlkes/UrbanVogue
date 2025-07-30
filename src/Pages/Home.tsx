@@ -5,84 +5,57 @@ import GenderCollectionSection from "../components/Products/GenderCollectionSect
 import NewArrivals from "../components/Products/NewArrivals";
 import ProductGrid from "../components/Products/ProductGrid";
 import ProductsDetails from "../components/Products/ProductsDetails";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { useEffect, useState } from "react";
+import { fetchProductsByFilters } from "../redux/slices/productSlices";
+import axios from "axios";
 
 const Home = () => {
+  const dispatch = useAppDispatch();
+  const { products, loading, error } = useAppSelector((state) => state.products);
+  const [bestSellerProduct, setBestSellerProduct] = useState<any>(null);
 
-const placeHolderProducts=[
-    {
-        _id:4,
-        name:"Product 1",
-        price:100,
-        images:[ {
-            url: "https://picsum.photos/500/500/?random=11"}]
-    },
-    {
-        _id:5,
-        name:"Product 2",
-        price:100,
-        images:[ {
-            url: "https://picsum.photos/500/500/?random=12"}]
-    },
-    {
-        _id:6,
-        name:"Product 3",
-        price:100,
-        images:[ {
-            url: "https://picsum.photos/500/500/?random=13"}]
-    },
-    {
-        _id:7,
-        name:"Product 4",
-        price:100,
-        images:[ {
-            url: "https://picsum.photos/500/500/?random=14"}]
-    },
-    {
-        _id:8,
-        name:"Product 1",
-        price:100,
-        images:[ {
-            url: "https://picsum.photos/500/500/?random=15"}]
-    },
-    {
-        _id:9,
-        name:"Product 2",
-        price:100,
-        images:[ {
-            url: "https://picsum.photos/500/500/?random=16"}]
-    },
-    {
-        _id:10,
-        name:"Product 3",
-        price:100,
-        images:[ {
-            url: "https://picsum.photos/500/500/?random=17"}]
-    },
-    {
-        _id:11,
-        name:"Product 4",
-        price:100,
-        images:[ {
-            url: "https://picsum.photos/500/500/?random=18"}]
-    },
-]
+  useEffect(() => {
+    dispatch(
+      fetchProductsByFilters({
+        gender: "Women",
+        category: "Bottom Wear",
+        limit: 8,
+      })
+    );
+
+    const fetchBestSeller = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/best-sellers`);
+        setBestSellerProduct(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchBestSeller();
+  }, [dispatch]);
 
   return (
     <div>
       <Hero />
-      <GenderCollectionSection/>
-      <NewArrivals/>
+      <GenderCollectionSection />
+      <NewArrivals />
       {/* BestSeller */}
       <h2 className="text-3xl text-center font-bold mb-4"> Best Seller</h2>
-      <ProductsDetails/>
+    {bestSellerProduct ? (
+        <ProductsDetails productId={bestSellerProduct._id} />
+      ) : (
+        <p>Loading best seller product...</p>
+      )}
       <div className="container mx-auto">
         <h2 className="text-3xl text-center font-bold mb-4">
-            Top Wears for Women
+          Top Wears for Women
         </h2>
-        <ProductGrid products={placeHolderProducts}/>
+        <ProductGrid products={products} loading={loading} error={error} />
       </div>
-      <FeaturedCollection/>
-      <FeaturedSection/>
+      <FeaturedCollection />
+      <FeaturedSection />
     </div>
   );
 };

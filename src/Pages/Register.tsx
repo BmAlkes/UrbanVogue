@@ -1,15 +1,48 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import hello from '../assets/hand_18407001.svg'
-import { Link } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import login from '../assets/1189.jpg'
-import { useAppDispatch } from "../redux/store"
+import { useAppDispatch, useAppSelector } from "../redux/store"
 import { registerUser } from "../redux/slices/authSlices"
+import { mergeCart } from "../redux/slices/cartSlices"
 
 const Register = () => {
-    const dispatch = useAppDispatch()
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [name, setName] = useState('')
+      const dispatch = useAppDispatch();
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const { user, guestId } = useAppSelector((state) => state.auth);
+  const { cart } = useAppSelector((state) => state.cart);
+
+  const redirect = new URLSearchParams(location.search).get("redirect") || "/";
+  const isCheckoutRedirect = redirect.includes("checkout");
+
+useEffect(() => {
+  const mergeAndRedirect = async () => {
+    if (user) {
+      try {
+        if (cart?.products.length > 0 && guestId) {
+          const result = await dispatch(mergeCart({ guestId, user }));
+          if (mergeCart.fulfilled.match(result)) {
+            navigate(isCheckoutRedirect ? "/checkout" : "/");
+          }
+        } else {
+          navigate(isCheckoutRedirect ? "/checkout" : "/");
+        }
+      } catch (error) {
+        console.error("Erro ao mesclar carrinho:", error);
+        navigate("/");
+      }
+    }
+  };
+
+  mergeAndRedirect();
+}, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
 
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -45,7 +78,7 @@ const Register = () => {
                 <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} className="w-full p-2 border rounded" placeholder="Enter your password" />
             </div>
             <button type="submit" className="w-full bg-black text-white rounded-lg p-2 font-semibold hover:bg-gray-800 transition">Sign UP</button>
-            <p className="mt-6 text-center text-sm"> Have already an account? {" "} <Link to="/login" className="text-blue-500 text-sm">Login</Link></p>
+            <p className="mt-6 text-center text-sm"> Have already an account? {" "} <Link to={`/login?redirect=${encodeURIComponent(redirect)}`}className="text-blue-500 text-sm">Login</Link></p>
           
         </form>
         </div>

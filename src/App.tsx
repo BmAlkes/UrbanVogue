@@ -19,12 +19,14 @@ import EditProductPage from "./components/Admin/EditProductPage";
 import OrderManagement from "./components/Admin/OrderManagement";
 import { Provider } from "react-redux";
 import store from "./redux/store";
+import ScrollToTop from "./components/ScrolToTo";
 
 const App = () => {
   return (
     <Provider store={store}>
     <BrowserRouter>
       <Toaster position="top-right" />
+      <ScrollToTop/>
       <Routes>
         <Route path="/" element={<UserLayout />}>
           {/* User Layout */}

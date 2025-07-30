@@ -2,6 +2,7 @@
 import { IoMdClose } from "react-icons/io";
 import CartContents from "../Cart/CartContents";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../redux/store";
 
 interface CartDrawerProps{
 drawerOpen : boolean;
@@ -9,8 +10,14 @@ toogleCartDrawer:()=> void;
 }
 const CartDrawer = ({drawerOpen, toogleCartDrawer}:CartDrawerProps) => {
     const navigate = useNavigate()
+    const {user,guestId} = useAppSelector((state)=>state.auth)
+    const {cart} = useAppSelector((state)=>state.cart)
+    const userId = user ? user.id : null
     const handleCheckout = () => {
         toogleCartDrawer()
+        if(!user){
+            navigate("/login?redirect=checkout")
+        }
         navigate("/checkout")
     }
     
@@ -24,11 +31,14 @@ const CartDrawer = ({drawerOpen, toogleCartDrawer}:CartDrawerProps) => {
         {/* Cart Contents with scrollable area */}
         <div className="flex-grow p-4 overflow-y-auto">
             <h2 className=" absolute top-4 left-4 text-lg font-semibold mb-4 text-center">Your cart</h2>
-            <CartContents/>
+            {cart && cart?.products?.length > 0?(<CartContents cart={cart} userId={userId} guestId={guestId}/>) :( <p>Your cart is empty</p>
+            )}
+            
         </div>
         {/* Checkout button fixed at the bottom */}
         <div className="p-4 bg-white sticky bottom-0">
-            <button onClick={handleCheckout} className="w-full bg-black text-white py03 rounded-lg font-semibold hover:bg-gray-800 transition">CheckOut</button>
+             {cart && cart?.products?.length > 0 &&(<button onClick={handleCheckout} className="w-full bg-black text-white py03 rounded-lg font-semibold hover:bg-gray-800 transition">CheckOut</button>)}
+            
             <p className="text-[10px] tracking-tighter mt-2 text-gray-500 text-center">Shipping, taxes, and discout codes calculated at checkout.</p>
         </div>
     </div>

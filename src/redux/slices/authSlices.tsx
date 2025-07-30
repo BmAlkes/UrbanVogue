@@ -22,7 +22,7 @@ const userFromStorage: User | null = localStorage.getItem("userInfo")
   ? JSON.parse(localStorage.getItem("userInfo") as string)
   : null;
 
-// Corrigindo o problema do guestId (antes tinha loop)
+// Geração inicial de guestId
 let initialGuestId = localStorage.getItem("guestId");
 
 if (!initialGuestId) {
@@ -30,7 +30,7 @@ if (!initialGuestId) {
   localStorage.setItem("guestId", initialGuestId);
 }
 
-// Estado inicial com tipagem
+// Estado inicial
 const initialState: AuthState = {
   user: userFromStorage,
   guestId: initialGuestId,
@@ -38,7 +38,7 @@ const initialState: AuthState = {
   error: null,
 };
 
-// Tipagem dos dados enviados para login e registro (exemplo)
+// Tipagem dos dados enviados para login e registro
 interface LoginData {
   email: string;
   password: string;
@@ -50,16 +50,16 @@ interface RegisterData {
   password: string;
 }
 
-// Tipagem do erro que queremos capturar no rejectWithValue
+// Tipagem do erro
 interface ErrorResponse {
   message: string;
 }
 
-// Async thunk para login do usuário, com tipos explícitos
+// Async thunk para login
 export const loginUser = createAsyncThunk<
-  User,                // tipo de retorno do thunk
-  LoginData,           // tipo do argumento que recebe
-  { rejectValue: ErrorResponse } // tipo do rejectWithValue
+  User,
+  LoginData,
+  { rejectValue: ErrorResponse }
 >(
   "auth/loginUser",
   async (userData, { rejectWithValue }) => {
@@ -82,7 +82,7 @@ export const loginUser = createAsyncThunk<
   }
 );
 
-// Async thunk para registro do usuário
+// Async thunk para registro
 export const registerUser = createAsyncThunk<
   User,
   RegisterData,
@@ -109,17 +109,25 @@ export const registerUser = createAsyncThunk<
   }
 );
 
+// Slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logout: (state) => {
+    // ✅ LOGOUT TOTAL
+    logoutUser: (state) => {
       state.user = null;
+      state.loading = false;
+      state.error = null;
       state.guestId = `guest_${new Date().getTime()}`;
+      
+
       localStorage.removeItem("userInfo");
       localStorage.removeItem("token");
       localStorage.setItem("guestId", state.guestId);
     },
+
+    // 🔄 gerar novo guest ID manualmente
     generateNewGuestId: (state) => {
       state.guestId = `guest_${new Date().getTime()}`;
       localStorage.setItem("guestId", state.guestId);
@@ -133,13 +141,11 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action: PayloadAction<User>) => {
-        state.loading = false;
         state.user = action.payload;
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        // action.payload tem tipo ErrorResponse | undefined
         state.error = action.payload ? action.payload.message : "Failed to login";
       })
 
@@ -160,5 +166,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, generateNewGuestId } = authSlice.actions;
+export const { logoutUser, generateNewGuestId } = authSlice.actions;
 export default authSlice.reducer;

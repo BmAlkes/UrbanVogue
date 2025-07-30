@@ -6,11 +6,14 @@ import { useState } from "react";
 import CartDrawer from "../Layout/CartDrawer";
 import { IoMdClose } from "react-icons/io";
 import logo from "../../assets/Urban_Vogue-removebg-preview.png";
+import { useAppSelector } from "../../redux/store";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
+  const {cart}= useAppSelector((state)=>state.cart)
 
+  const cartItemCount = cart.products.reduce((total,product)=> total + product.quantity,0)
   const toogleNavDrawer = () => {
     setNavDrawerOpen(!navDrawerOpen);
   };
@@ -33,25 +36,25 @@ const Navbar = () => {
         {/* Center navigatio */}
         <div className="hidden md:flex space-x-6">
           <Link
-            to="/colletions/all"
+            to="/colletions/all?gender=Men"
             className="text-gray-700 hover:text-black text-xs font-medium uppercase"
           >
             Men
           </Link>
           <Link
-            to="#"
+            to="/colletions/all?gender=Women"
             className="text-gray-700 hover:text-black text-xs font-medium uppercase"
           >
             Woman
           </Link>
           <Link
-            to="#"
+            to="/colletions/all?category=Top Wear"
             className="text-gray-700 hover:text-black text-xs font-medium uppercase"
           >
             Top Wear
           </Link>
           <Link
-            to="#"
+            to="/colletions/all?category=Bottom Wear"
             className="text-gray-700 hover:text-black text-xs font-medium uppercase"
           >
             Bottom Wear
@@ -68,9 +71,10 @@ const Navbar = () => {
             onClick={toogleCartDrawer}
           >
             <HiOutlineShoppingBag className="text-gray-700" />
-            <span className="absolute -top-2.5 -right-2 bg-red-500  text-white text-[10px] rounded-full px-1 ">
-              4
-            </span>
+             {cartItemCount > 0 &&(<span className="absolute -top-2.5 -right-2 bg-red-500  text-white text-[10px] rounded-full px-1 ">
+              {cartItemCount}
+            </span>)  }
+            
           </button>
           <div className="overflow-hidden">
             {/* Search */}
@@ -105,28 +109,28 @@ const Navbar = () => {
           <h2 className="text-xl font-semibold mb-4">Menu</h2>
           <nav className="space-y-4 ">
             <Link
-              to="#"
+              to="/colletions/all?gender=Men"
               onClick={toogleNavDrawer}
               className="block text-gray-600 hover:text-black"
             >
               Men
             </Link>
             <Link
-              to="#"
+              to="/colletions/all?gender=Women"
               onClick={toogleNavDrawer}
               className="block text-gray-600 hover:text-black"
             >
               Woman
             </Link>
             <Link
-              to="#"
+              to="/colletions/all?category=Top Wear"
               onClick={toogleNavDrawer}
               className="block text-gray-600 hover:text-black"
             >
               Top Wear
             </Link>
             <Link
-              to="#"
+              to="/colletions/all?category=Bottom Wear"
               onClick={toogleNavDrawer}
               className="block text-gray-600 hover:text-black"
             >
