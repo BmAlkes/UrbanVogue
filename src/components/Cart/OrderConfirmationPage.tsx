@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { clearCart } from "../../redux/slices/cartSlices";
 
 const OrderConfirmationPage = () => {
-  const { checkout, loading, error } = useAppSelector(
+  const { checkout } = useAppSelector(
     (state) => state.checkout
   );
   const dispatch = useAppDispatch();
@@ -16,7 +16,7 @@ useEffect(()=>{
     dispatch(clearCart())
     localStorage.removeItem('cart')
   }else{
-    navigate('/my-order')
+    navigate('/my-orders')
   }
 },[ checkout, dispatch, navigate])
 

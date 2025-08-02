@@ -14,7 +14,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { user, guestId } = useAppSelector((state) => state.auth);
+  const { user, guestId, loading } = useAppSelector((state) => state.auth);
   const { cart } = useAppSelector((state) => state.cart);
 
   const redirect = new URLSearchParams(location.search).get("redirect") || "/";
@@ -90,7 +90,7 @@ useEffect(() => {
             type="submit"
             className="w-full bg-black text-white rounded-lg p-2 font-semibold hover:bg-gray-800 transition"
           >
-            Login
+            {loading ? "Loading..." : "Sign In"}
           </button>
           <p className="mt-6 text-center text-sm">
             Don't have an account?{" "}
