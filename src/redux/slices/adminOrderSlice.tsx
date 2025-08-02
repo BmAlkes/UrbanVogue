@@ -27,7 +27,7 @@ export const fecthAllOrders = createAsyncThunk<Order[], void, { rejectValue: str
     try {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/orders`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       return response.data;
@@ -47,7 +47,7 @@ export const updateOrderStatus = createAsyncThunk<Order, UpdateOrderStatusParams
     try {
       const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/admin/orders/${id}`, { status }, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       return response.data;
@@ -67,7 +67,7 @@ export const deleteOrder = createAsyncThunk<Order, string, { rejectValue: string
     try {
       const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/admin/orders/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       return response.data;

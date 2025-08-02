@@ -18,8 +18,8 @@ interface AdminState {
 
 interface UpdateUserParams {
   id: string;
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
   role: string;
 }
 
@@ -30,7 +30,7 @@ export const fetchUsers = createAsyncThunk<User[], void, { rejectValue: string }
     try {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/users`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       return response.data;
@@ -50,7 +50,7 @@ export const addUser = createAsyncThunk<User, Partial<User>, { rejectValue: stri
     try {
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/admin/users`, userData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       return response.data;
@@ -67,12 +67,13 @@ export const addUser = createAsyncThunk<User, Partial<User>, { rejectValue: stri
 export const updateUser = createAsyncThunk<User, UpdateUserParams, { rejectValue: string }>(
   "admin/updateUser",
   async ({ id, name, email, role }, { rejectWithValue }) => {
+    console.log(id)
     try {
       const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${id}`,
         { name, email, role },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
@@ -93,7 +94,7 @@ export const deleteUser = createAsyncThunk<User, string, { rejectValue: string }
     try {
       const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       return response.data;
@@ -168,7 +169,8 @@ const adminSlice = createSlice({
       .addCase(deleteUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Erro ao excluir usuário.";
-      });
+      })
+      
   },
 });
 

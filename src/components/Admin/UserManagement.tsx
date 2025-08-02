@@ -1,22 +1,28 @@
-import { useState } from "react"
+import { use, useEffect, useState } from "react"
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { useNavigate } from "react-router-dom";
+import { addUser, deleteUser, fetchUsers, updateUser } from "../../redux/slices/adminSlice";
 
 
 const UserManagement = () => {
-    const user =[
-        {
-            id: 1,
-            name: "John Doe",
-            email:"john@example.com",
-            role:"admin",
-        },
-        {
-            id: 2,
-            name: "John Doe 2",
-            email:"john2@example.com",
-            role:"customer",
-        }
-    ]
+   const dispatch = useAppDispatch();
+const navigate = useNavigate();
 
+const {user}= useAppSelector((state) => state.auth);
+const {users,error,loading}= useAppSelector((state) => state.admin);
+
+useEffect(()=>{
+    if(user && user.role !== "admin") {
+        navigate("/"); // Redirect to home if not admin
+    }
+
+},[user, navigate, ]);
+
+useEffect(() => {
+    if(user && user.role === "admin") {
+       dispatch(fetchUsers());
+    }
+},[users,dispatch, user]);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -34,8 +40,8 @@ const UserManagement = () => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Handle form submission logic here
-        console.log("Form submitted:", formData);
+        dispatch(addUser(formData));
+
         // Reset form data after submission
         setFormData({
             name: "",
@@ -45,23 +51,26 @@ const UserManagement = () => {
         });
     };
 
-    const handleRoleChange = (userId: number, newRole: string) => {
+    const handleRoleChange = (userId: string, newRole: string) => {
         // Handle role change logic here
-        console.log(`User ID: ${userId}, New Role: ${newRole}`);
+     dispatch(updateUser({ id: userId, role: newRole }));
     };
 
 const handleDeleteUser = (userId: number) => {
    
     if(window.confirm("Are you sure you want to delete this user?")) {
         // Handle delete user logic here
-        console.log(`User with ID ${userId} deleted`);
+        dispatch(deleteUser(userId.toString()))
     }
 
 }
+console.log(users);
   return (
     <div className="max-w-7xl mx-auto p-6">
         <h2 className="text-2xl font-bold mb-6"> User Management</h2>
         {/* Add new user Form */}
+        {loading && <p>Loading...</p>}
+        {error && <p className="text-red-500">Error:..{error}</p>}
         <div className="p-6 rounded-lg mb-6">
             <h3 className="text-lg font-bold mb-4">Add new Users</h3>
             <form onSubmit={handleSubmit}>
@@ -99,12 +108,12 @@ const handleDeleteUser = (userId: number) => {
             </tr>
         </thead>
         <tbody className="bg-white text-sm">
-            {user.map((user) => (
-                <tr key={user.id} className="border-b hover:bg-gray-50">
+            {users.map((user:any) => (
+                <tr key={user._id} className="border-b hover:bg-gray-50">
                     <td className="p-4">{user.name}</td>
                     <td className="p-4">{user.email}</td>
                     <td className="p-4">
-                        <select value={user.role} onChange={(e)=>handleRoleChange(user.id, e.target.value)} className="p-2 border rounded">
+                        <select value={user.role} onChange={(e)=>handleRoleChange(user._id, e.target.value)} className="p-2 border rounded">
                             <option value="customer">Customer</option>
                             <option value="admin">Admin</option>
                         </select>
@@ -112,7 +121,7 @@ const handleDeleteUser = (userId: number) => {
                    
                     <td className="p-4">
                        
-                        <button className="bg-red-500 px-4 py-2 rounded-md text-white hover:bg-red-700" onClick={()=>handleDeleteUser(user.id)}>Delete</button>
+                        <button className="bg-red-500 px-4 py-2 rounded-md text-white hover:bg-red-700" onClick={()=>handleDeleteUser(user._id)}>Delete</button>
                     </td>
                 </tr>
             ))}

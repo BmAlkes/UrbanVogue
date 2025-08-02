@@ -1,19 +1,32 @@
-const OrderManagement = () => {
-  const orders = [
-    {
-      _id: 121323,
-      user: {
-        name: "John Doe",
-      },
-      totasPrice: 123,
-      status: "Processing",
-    },
-  ];
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { useEffect } from "react";
+import { fecthAllOrders, updateOrderStatus } from "../../redux/slices/adminOrderSlice";
 
-  const handleStatusChange = (orderId: number, newStatus: string) => {
-    // Handle status change logic here
-    console.log(`Order ID: ${orderId}, New Status: ${newStatus}`);
+const OrderManagement = () => {
+ const dispatch = useAppDispatch();
+const navigate = useNavigate();
+const {user}=useAppSelector((state)=>state.auth)
+const {orders,loading,error} = useAppSelector((state)=>state.adminOrders)
+
+
+
+useEffect(()=>{
+  if(!user || user.role !== "admin") {
+    navigate("/login");
+  }else{
+    dispatch(fecthAllOrders())
+  }
+},[dispatch, user, navigate]);
+console.log(orders);
+
+
+  const handleStatusChange = (orderId: string, newStatus: string) => {
+ dispatch(updateOrderStatus({ id: orderId, status: newStatus }));
+
   };
+  if(loading) return <div className="text-center p-4">Loading...</div>;
+  if(error) return <div className="text-center p-4 text-red-500">Error:..{error}</div>;
   return (
     <div className="max-w-7xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6">Order Management</h2>
@@ -34,7 +47,7 @@ const OrderManagement = () => {
                   <tr key={order._id} className="border-b hover:bg-gray-50">
                     <td className="py-4 px-4 font-medium text-gray-900 whitespace-nowrap">#{order._id}</td>
                     <td className="p-4">{order.user.name}</td>
-                    <td className="p-4">${order.totasPrice}</td>
+                    <td className="p-4">${order.totalPrice.toFixed(2)}</td>
                     <td className="py-4">
                         <select value={order.status} onChange={(e)=>handleStatusChange(order._id, e.target.value)} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                             <option value="Processing">Processing</option>

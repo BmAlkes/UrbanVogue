@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { useNavigate, useParams } from "react-router-dom";
+import { fecthProductDetails, updateProduct } from "../../redux/slices/productSlices";
 
 interface Image {
   url: string;
@@ -20,6 +23,12 @@ interface ProductDataProps {
 }
 
 const EditProductPage = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+const { id = "" } = useParams<{ id: string }>();
+const {selectedProduct,loading,error}= useAppSelector((state) => state.products);
+
   const [productData, setProductData] = useState<ProductDataProps>({
     name: "",
     price: 0,
@@ -34,11 +43,21 @@ const EditProductPage = () => {
     material: "",
     gender: "",
     images: [
-      { url: "https://picsum.photos/150?ransom=1" },
-      { url: "https://picsum.photos/150?ransom=2" },
     ],
   });
 
+
+useEffect(()=>{
+  if(id){
+    dispatch(fecthProductDetails(id));
+  }
+},[dispatch, id]);
+
+useEffect(()=>{
+  if(selectedProduct){
+    setProductData(selectedProduct)
+  }
+},[selectedProduct])
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -68,8 +87,14 @@ const EditProductPage = () => {
 
 const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Product data submitted:", productData);
+ 
+    dispatch(updateProduct({id, productData }));
+    navigate("/admin/products");
 }
+if(loading) {
+  return <div className="text-center p-4">Loading...</div>;  }
+if (error) {
+  return <div className="text-center p-4 text-red-500">Error: {error}</div>;}
 
   return (
     <div className="max-w-5xl mx-auto p-6 shadow-md rounded-md">

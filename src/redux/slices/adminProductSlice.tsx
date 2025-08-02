@@ -23,7 +23,7 @@ export const fecthAdminProducts = createAsyncThunk<Product[], void, { rejectValu
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/products`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
@@ -47,7 +47,7 @@ export const createProduct = createAsyncThunk<Product, any, { rejectValue: strin
         productData,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
@@ -71,7 +71,7 @@ export const updateProduct = createAsyncThunk<Product, { id: string; productData
         productData,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
@@ -94,7 +94,7 @@ export const deleteProduct = createAsyncThunk<Product, string, { rejectValue: st
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/products/${id}`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );

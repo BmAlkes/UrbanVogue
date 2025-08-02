@@ -12,6 +12,8 @@ const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
   const {cart}= useAppSelector((state)=>state.cart)
+  const{user} = useAppSelector((state)=> state.auth)
+
 
   const cartItemCount = cart.products.reduce((total,product)=> total + product.quantity,0)
   const toogleNavDrawer = () => {
@@ -62,7 +64,8 @@ const Navbar = () => {
         </div>
         {/* right - icons */}
         <div className="flex items-center space-x-4">
-          <Link to="/admin" className="block bg-black px-2 rounded text-white text-xs">Admin</Link>
+          {user && user?.role === "admin" && (<Link to="/admin" className="block bg-black px-2 rounded text-white text-xs">Admin</Link>)}
+          
           <Link to="/profile" className="hover:text-black">
             <HiOutlineUser className="text-gray-700" />
           </Link>

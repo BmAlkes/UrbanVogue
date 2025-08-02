@@ -4,20 +4,25 @@ import { FilterProps } from "../../components/Products/FilterSideBar";
 
 //Async thunk to fetch products by collection and optional filters
 interface Product {
-  _id: number;
-  name: string;
+  _id:string
+ name: string;
   price: number;
-  images: ProductImage[];
-  originalPrice:number;
-  description:string;
-  colors:string[]
-  sizes:string[]
-  brand:string;
-  material:string;
+  sku: string;
+  countInStock: number;
+  description: string;
+  category: string;
+  brand: string;
+  sizes: string[];
+  colors: string[];
+  colletion: string;
+  material: string;
+  gender: string;
+  images: Image[];
 }
-interface ProductImage {
+export interface Image {
   url: string;
 }
+
 
 interface Filters {
   category: string;
@@ -92,9 +97,11 @@ export const fecthProductDetails = createAsyncThunk(
 );
 
 //Async thunk to update product details
+// redux/slices/productSlices.ts
+
 export const updateProduct = createAsyncThunk(
   "products/updateProduct",
-  async (productData: any, id: any) => {
+  async ({ id, productData }: { id: string; productData:any}) => {
     const response = await axios.put(
       `${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`,
       productData,
@@ -107,6 +114,7 @@ export const updateProduct = createAsyncThunk(
     return response.data;
   }
 );
+
 
 // async thunk to get similar products
 export const fetchSimilarProducts = createAsyncThunk(
