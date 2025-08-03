@@ -39,31 +39,25 @@ Node.js >= 18
 npm or yarn
 
 Installation
-bash
-Copy
-Edit
+
 git clone https://github.com/yourusername/urban-vogue.git
 cd urban-vogue
 npm install
+
 Running the App
-bash
-Copy
-Edit
+
 npm run dev
+
 Building for Production
-bash
-Copy
-Edit
+
 npm run build
+
 Linting
-bash
-Copy
-Edit
+
 npm run lint
+
 🔐 Folder Structure (Simplified)
-bash
-Copy
-Edit
+
 src/
 │
 ├── components/       # Reusable UI components
@@ -73,6 +67,7 @@ src/
 ├── utils/            # Helper functions
 ├── App.tsx
 └── main.tsx
+
 💻 Deployment
 You can deploy this project easily to:
 
