@@ -1,4 +1,4 @@
-<img src=""/>
+<img src="https://github.com/BmAlkes/UrbanVogue/blob/main/src/assets/urbanvogue.png?raw=true"/>
 
 🛍️ Urban Vogue
 Urban Vogue is a modern and stylish e-commerce web application built with React, Vite, and TypeScript. It delivers a smooth and elegant shopping experience, with features like PayPal integration, user authentication, global state management via Redux, and a responsive design powered by TailwindCSS.
