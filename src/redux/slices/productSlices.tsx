@@ -3,7 +3,7 @@ import axios from "axios";
 import { FilterProps } from "../../components/Products/FilterSideBar";
 
 //Async thunk to fetch products by collection and optional filters
-interface Product {
+export interface Product {
   _id:string
  name: string;
   price: number;

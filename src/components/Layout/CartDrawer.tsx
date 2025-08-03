@@ -31,7 +31,7 @@ const CartDrawer = ({drawerOpen, toogleCartDrawer}:CartDrawerProps) => {
         {/* Cart Contents with scrollable area */}
         <div className="flex-grow p-4 overflow-y-auto">
             <h2 className=" absolute top-4 left-4 text-lg font-semibold mb-4 text-center">Your cart</h2>
-            {cart && cart?.products?.length > 0?(<CartContents cart={cart} userId={userId} guestId={guestId}/>) :( <p>Your cart is empty</p>
+            {cart && cart?.products?.length > 0?(<CartContents cart={cart} userId={userId ?? " "} guestId={guestId??""}/>) :( <p>Your cart is empty</p>
             )}
             
         </div>

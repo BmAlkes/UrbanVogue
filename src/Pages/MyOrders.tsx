@@ -17,17 +17,6 @@ export interface ShippingAddress {
   address?: string; // ✅ MongoDB usa 'address', não 'street'
 }
 
-// ✅ Interface para order do MongoDB
-interface MongoOrder {
-  _id: string;
-  createdAt: string;
-  shippingAddress: ShippingAddress;
-  orderItemSchema: any[]; // ✅ MongoDB usa 'orderItemSchema', não 'orderItems'
-  totalPrice: number;
-  isPaid: boolean;
-  paymentMethod: string;
-  status: string;
-}
 
 const MyOrders = () => {
   const dispatch = useAppDispatch();

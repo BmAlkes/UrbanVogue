@@ -1,15 +1,9 @@
 import { Link } from "react-router-dom";
+import { Product } from "../../redux/slices/productSlices";
 
-interface ProductImage {
-  url: string;
-}
 
-interface Product {
-  _id: number;
-  name: string;
-  price: number;
-  images: ProductImage[];
-}
+
+
 interface SimilarProductProps {
   products: Product[];
   loading?: boolean;
