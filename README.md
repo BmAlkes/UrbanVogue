@@ -20,16 +20,17 @@ Urban Vogue is a modern and stylish e-commerce web application built with React,
 
 🚀 Code quality with ESLint and TypeScript strict mode
 
-📦 Tech Stack
-Technology	Description
-React 19	Frontend UI
-Redux Toolkit	State management
-TypeScript	Static typing
-Vite	Fast bundler and dev server
-TailwindCSS	Utility-first CSS framework
-React Router DOM	SPA navigation
-Axios	HTTP requests
-PayPal SDK	Payment integration
+| Technology       | Description                 |
+| ---------------- | --------------------------- |
+| React 19         | Frontend UI                 |
+| Redux Toolkit    | State management            |
+| TypeScript       | Static typing               |
+| Vite             | Fast bundler and dev server |
+| TailwindCSS      | Utility-first CSS framework |
+| React Router DOM | SPA navigation              |
+| Axios            | HTTP requests               |
+| PayPal SDK       | Payment integration         |
+
 
 🛠️ Setup and Development
 Prerequisites
