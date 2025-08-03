@@ -1,7 +1,6 @@
 // utils/axiosInstance.ts ou similar
 import axios from "axios";
-import { store } from "./redux/store"; // Importa store
-import { logoutUser } from "./redux/slices/authSlices";
+
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,

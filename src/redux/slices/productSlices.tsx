@@ -18,6 +18,8 @@ export interface Product {
   material: string;
   gender: string;
   images: Image[];
+  totalPrice?: number;
+  originalPrice?: number;
 }
 export interface Image {
   url: string;
