@@ -1,55 +1,104 @@
-# React + TypeScript + Vite
+<img src=""/>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🛍️ Urban Vogue
+Urban Vogue is a modern and stylish e-commerce web application built with React, Vite, and TypeScript. It delivers a smooth and elegant shopping experience, with features like PayPal integration, user authentication, global state management via Redux, and a responsive design powered by TailwindCSS.
 
-Currently, two official plugins are available:
+🌟 Features
+⚡️ Fast and modern stack using Vite + React 19 + TypeScript
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🎨 Beautiful and responsive UI with TailwindCSS
 
-## Expanding the ESLint configuration
+🛒 Fully functional shopping cart and checkout flow
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+💳 Seamless PayPal integration for secure payments
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+🌍 Country data with world-countries package
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🔒 Protected routes for authenticated user access
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+📦 Global state management with Redux Toolkit
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
-# UrbanVogue
+🚀 Code quality with ESLint and TypeScript strict mode
+
+📦 Tech Stack
+Technology	Description
+React 19	Frontend UI
+Redux Toolkit	State management
+TypeScript	Static typing
+Vite	Fast bundler and dev server
+TailwindCSS	Utility-first CSS framework
+React Router DOM	SPA navigation
+Axios	HTTP requests
+PayPal SDK	Payment integration
+
+🛠️ Setup and Development
+Prerequisites
+Node.js >= 18
+
+npm or yarn
+
+Installation
+bash
+Copy
+Edit
+git clone https://github.com/yourusername/urban-vogue.git
+cd urban-vogue
+npm install
+Running the App
+bash
+Copy
+Edit
+npm run dev
+Building for Production
+bash
+Copy
+Edit
+npm run build
+Linting
+bash
+Copy
+Edit
+npm run lint
+🔐 Folder Structure (Simplified)
+bash
+Copy
+Edit
+src/
+│
+├── components/       # Reusable UI components
+├── pages/            # Main pages (Home, Product, Checkout, etc.)
+├── redux/            # Redux store, slices, etc.
+├── routes/           # Protected and public route config
+├── utils/            # Helper functions
+├── App.tsx
+└── main.tsx
+💻 Deployment
+You can deploy this project easily to:
+
+Vercel
+
+Netlify
+
+Render
+
+or any service that supports static SPA hosting
+
+💡 Future Improvements
+User dashboard with order history
+
+Admin panel for product management
+
+Product reviews & ratings
+
+Wishlist functionality
+
+Multilingual support
+
+🙌 Contributing
+Feel free to fork the project and submit a pull request. Any help to improve Urban Vogue is always welcome!
+
+📄 License
+MIT License
+
+🧑‍💻 Developed by
+Bruno Malkes — dotvizion.com
